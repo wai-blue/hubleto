@@ -87,6 +87,21 @@ class CommandInit extends \HubletoMain\Cli\Agent\Command
     if ($adminEmail === null) $adminEmail = $this->cli->read('Account.adminEmail (will be used also for login)', 'john.smith@example.com');
     if ($adminPassword === null) $adminPassword = $this->cli->read('Account.adminPassword (leave empty to generate random password)');
 
+    $errors = [];
+    $errorColumns = [];
+    if (!filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+      $errorColumns[] = 'adminEmail';
+      $errors[] = 'Invalid admin email.';
+    }
+    if (!filter_var($accountUrl, FILTER_VALIDATE_URL)) {
+      $errorColumns[] = 'accountUrl';
+      $errors[] = 'Invalid account url.';
+    }
+    if (!filter_var($mainUrl, FILTER_VALIDATE_URL)) {
+      $errorColumns[] = 'mainUrl';
+      $errors[] = 'Invalid main url.';
+    }
+
     if (empty($packagesToInstall)) $packagesToInstall = 'core,sales';
     if (empty($adminPassword)) $adminPassword = \ADIOS\Core\Helper::randomPassword();
 
@@ -100,6 +115,13 @@ class CommandInit extends \HubletoMain\Cli\Agent\Command
     $this->cli->cyan("\n");
     $this->cli->green("Hubleto, release " . \HubletoMain::RELEASE . "\n");
     $this->cli->cyan("\n");
+
+    if (sizeof($errors) > 0) {
+      $this->cli->red("Some fields contain incorrect values: " . join(" ", $errorColumns) . "\n");
+      $this->cli->red(join("\n", $errors));
+      $this->cli->white("\n");
+      throw new \ErrorException("Some fields contain incorrect values: " . join(" ", $errorColumns) . "\n");
+    }
 
     $this->cli->cyan("Initializing with following config:\n");
     $this->cli->cyan('  -> rewriteBase = ' . (string) $rewriteBase . "\n");
