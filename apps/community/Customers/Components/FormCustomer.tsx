@@ -16,6 +16,7 @@ import FormDocument, {FormDocumentProps, FormDocumentState} from "../../Document
 import FormPerson, {FormPersonProps, FormPersonState} from "../../Contacts/Components/FormPerson";
 import Calendar from '../../Calendar/Components/Calendar'
 import Hyperlink from "adios/Inputs/Hyperlink";
+import request from "adios/Request";
 
 export interface FormCustomerProps extends HubletoFormProps {
   highlightIdActivity: number,
@@ -38,6 +39,7 @@ interface FormCustomerState extends HubletoFormState {
   showIdActivity: number,
   activityCalendarTimeClicked: string,
   activityCalendarDateClicked: string,
+  tableContactsDescription?: any,
 }
 
 export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, FormCustomerState> {
@@ -91,6 +93,19 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
     }
   }
 
+  onAfterFormInitialized(): void {
+    request.get(
+      'api/table/describe',
+      {
+        model: 'HubletoApp/Community/Contacts/Models/Contact',
+        idPerson: -1,
+      },
+      (description: any) => {
+        this.setState({tableContactsDescription: description} as FormCustomerState);
+      }
+    );
+  }
+
   renderNewPersonForm(R: any): JSX.Element {
     return (
       <ModalSimple
@@ -103,6 +118,7 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
           creatingNew={true}
           isInlineEditing={true}
           descriptionSource="both"
+          tableContactsDescription={this.state.tableContactsDescription}
           description={{
             defaultValues: {
               id_customer: R.id
@@ -330,16 +346,14 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
                 <div className="card" style={{ gridArea: "contacts" }}>
                   <div className="card-header">{this.translate('Contacts')}</div>
                   <div className="card-body">
-                    {this.state.isInlineEditing ? (
-                      <a
-                        role="button"
-                        onClick={() => {
-                          if (!R.PERSONS) R.PERSONS = [];
-                          this.setState({createNewPerson: true} as FormCustomerState);
-                        }}>
-                        + {this.translate('Add contact')}
-                      </a>
-                    ) : null}
+                    <a
+                      role="button"
+                      onClick={() => {
+                        if (!R.PERSONS) R.PERSONS = [];
+                        this.setState({createNewPerson: true} as FormCustomerState);
+                      }}>
+                      + {this.translate('Add contact')}
+                    </a>
                     <TablePersons
                       uid={this.props.uid + "_table_persons"}
                       parentForm={this}
@@ -413,13 +427,11 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
           ) : null}
           {showAdditional ? (
             <TabPanel header={this.translate('Leads')}>
-              {this.state.isInlineEditing ? (
-                <a
-                  role="button"
-                  onClick={() => {this.setState({ createNewLead: true } as FormCustomerState);}}>
-                  + Add Lead
-                </a>
-              ) : <></>}
+              <a
+                role="button"
+                onClick={() => {this.setState({ createNewLead: true } as FormCustomerState);}}>
+                + Add Lead
+              </a>
               <TableLeads
                 uid={this.props.uid + "_table_leads"}
                 data={{ data: R.LEADS }}
@@ -443,6 +455,9 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
                   },
                 }}
                 onRowClick={(table: TableLeads, row: any) => {
+                  var tableProps = this.props.tableLeadsDescription
+                  tableProps.idLead = row.id;
+                  table.onAfterLoadTableDescription(tableProps)
                   table.openForm(row.id);
                 }}
                 onDeleteSelectionChange={(table: TableLeads) => {
@@ -456,13 +471,11 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
           ) : null}
           {showAdditional ? (
             <TabPanel header={this.translate('Deals')}>
-              {this.state.isInlineEditing ? (
-                <a
-                  role="button"
-                  onClick={() => {this.setState({ createNewDeal: true } as FormCustomerState);}}>
-                  + Add Deal
-                </a>
-              ) : <></>}
+              <a
+                role="button"
+                onClick={() => {this.setState({ createNewDeal: true } as FormCustomerState);}}>
+                + Add Deal
+              </a>
               <TableDeals
                 uid={this.props.uid + "_table_deals"}
                 data={{ data: R.DEALS }}
@@ -486,6 +499,9 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
                   },
                 }}
                 onRowClick={(table: TableDeals, row: any) => {
+                  var tableProps = this.props.tableDealsDescription
+                  tableProps.idLead = row.id;
+                  table.onAfterLoadTableDescription(tableProps)
                   table.openForm(row.id);
                 }}
                 onDeleteSelectionChange={(table: TableDeals) => {
@@ -502,14 +518,12 @@ export default class FormCustomer<P, S> extends HubletoForm<FormCustomerProps, F
               <div className="divider"><div><div><div></div></div><div><span>{this.translate('Shared documents')}</span></div></div></div>
               {this.inputWrapper('shared_folder', {readonly: R.is_archived})}
               <div className="divider"><div><div><div></div></div><div><span>{this.translate('Local documents')}</span></div></div></div>
-              {this.state.isInlineEditing ? (
-                <a
-                  role="button"
-                  onClick={() => this.setState({showIdDocument: -1} as FormCustomerState)}
-                >
-                  + Add Document
-                </a>
-              ) : <></>}
+              <a
+                role="button"
+                onClick={() => this.setState({showIdDocument: -1} as FormCustomerState)}
+              >
+                + Add Document
+              </a>
               <TableCustomerDocuments
                 uid={this.props.uid + "_table_deals"}
                 data={{ data: R.DOCUMENTS }}

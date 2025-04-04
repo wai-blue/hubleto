@@ -259,6 +259,21 @@ export default class FormLead<P, S> extends HubletoForm<FormLeadProps,FormLeadSt
                 <div className='card mt-2' style={{gridArea: 'services'}}>
                   <div className='card-header'>Services</div>
                   <div className='card-body flex flex-col gap-2'>
+                    {!R.is_archived ? (
+                      <a
+                        role="button"
+                        onClick={() => {
+                          if (!R.SERVICES) R.SERVICES = [];
+                          R.SERVICES.push({
+                            id: this.state.newEntryId,
+                            id_lead: { _useMasterRecordId_: true },
+                            amount: 1,
+                          });
+                          this.setState({ record: R, isInlineEditing: true, newEntryId: this.state.newEntryId - 1 } as FormLeadState);
+                        }}>
+                        + Add service
+                      </a>
+                    ) : null}
                     <div className='w-full h-full overflow-x-auto'>
                       <TableLeadServices
                         uid={this.props.uid + "_table_lead_services"}
@@ -394,22 +409,6 @@ export default class FormLead<P, S> extends HubletoForm<FormLeadProps,FormLeadSt
                       ></TableLeadServices>
                     </div>
                   </div>
-                    {this.state.isInlineEditing && !R.is_archived ? (
-                      <a
-                        role="button"
-                        onClick={() => {
-                          if (!R.SERVICES) R.SERVICES = [];
-                          R.SERVICES.push({
-                            id: this.state.newEntryId,
-                            id_lead: { _useMasterRecordId_: true },
-                            amount: 1,
-                          });
-                          this.setState({ record: R });
-                          this.setState({ newEntryId: this.state.newEntryId - 1 } as FormLeadState);
-                        }}>
-                        + Add service
-                      </a>
-                    ) : null}
                 </div>
               : null}
             </div>
@@ -470,6 +469,14 @@ export default class FormLead<P, S> extends HubletoForm<FormLeadProps,FormLeadSt
               <div className="divider"><div><div><div></div></div><div><span>{this.translate('Shared documents')}</span></div></div></div>
               {this.inputWrapper('shared_folder', {readonly: R.is_archived})}
               <div className="divider"><div><div><div></div></div><div><span>{this.translate('Local documents')}</span></div></div></div>
+              {!R.is_archived ?
+                <a
+                  role="button"
+                  onClick={() => this.setState({showIdDocument: -1} as FormLeadState)}
+                >
+                  + Add Document
+                </a>
+              : null}
               <TableLeadDocuments
                 uid={this.props.uid + "_table_lead_document"}
                 data={{ data: R.DOCUMENTS }}
@@ -505,14 +512,6 @@ export default class FormLead<P, S> extends HubletoForm<FormLeadProps,FormLeadSt
                   this.setState({showIdDocument: row.id_document} as FormLeadState);
                 }}
               />
-              {this.state.isInlineEditing  && !R.is_archived ?
-                <a
-                  role="button"
-                  onClick={() => this.setState({showIdDocument: -1} as FormLeadState)}
-                >
-                  + Add Document
-                </a>
-              : null}
               {this.state.showIdDocument != 0 ?
                 <ModalSimple
                   uid='document_form'

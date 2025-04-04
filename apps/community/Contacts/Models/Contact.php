@@ -40,7 +40,7 @@ class Contact extends \HubletoMain\Core\Model
     $description->ui['showFulltextSearch'] = true;
     $description->ui['showFooter'] = false;
 
-    if ($this->main->urlParamAsInteger('idPerson') > 0) {
+    if ($this->main->urlParamAsInteger('idPerson') != 0) {
       $description->permissions = [
         'canRead' => $this->main->permissions->granted($this->fullName . ':Read'),
         'canCreate' => $this->main->permissions->granted($this->fullName . ':Create'),

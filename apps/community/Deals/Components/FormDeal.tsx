@@ -312,7 +312,7 @@ export default class FormDeal<P, S> extends HubletoForm<FormDealProps,FormDealSt
                         <div className='card-header'>Services</div>
                         <div className='card-body flex flex-col gap-2'>
                           <div className='w-full h-full overflow-x-auto'>
-                          {this.state.isInlineEditing && !R.is_archived ?
+                          {!R.is_archived ?
                             <a
                               role="button"
                               onClick={() => {
@@ -322,8 +322,7 @@ export default class FormDeal<P, S> extends HubletoForm<FormDealProps,FormDealSt
                                   id_deal: { _useMasterRecordId_: true },
                                   amount: 1
                                 });
-                                this.setState({ record: R });
-                                this.setState({ newEntryId: this.state.newEntryId - 1 } as FormDealState);
+                                this.setState({ record: R, isInlineEditing: true, newEntryId: this.state.newEntryId - 1 } as FormDealState);
                               }}>
                               + Add service
                             </a>
@@ -525,7 +524,7 @@ export default class FormDeal<P, S> extends HubletoForm<FormDealProps,FormDealSt
               <div className="divider"><div><div><div></div></div><div><span>{this.translate('Shared documents')}</span></div></div></div>
               {this.inputWrapper('shared_folder', {readonly: R.is_archived})}
               <div className="divider"><div><div><div></div></div><div><span>{this.translate('Local documents')}</span></div></div></div>
-              {this.state.isInlineEditing  && !R.is_archived ?
+              {!R.is_archived ?
                 <a
                   role="button"
                   onClick={() => this.setState({showIdDocument: -1} as FormDealState)}

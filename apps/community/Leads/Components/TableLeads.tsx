@@ -94,7 +94,7 @@ export default class TableLeads extends Table<TableLeadsProps, TableLeadsState> 
       'api/table/describe',
       {
         model: 'HubletoApp/Community/Leads/Models/LeadService',
-        idLead: this.props.recordId,
+        idLead: this.props.recordId ?? description.idLead,
       },
       (description: any) => {
         this.setState({tableLeadServicesDescription: description} as TableLeadsState);
@@ -104,7 +104,7 @@ export default class TableLeads extends Table<TableLeadsProps, TableLeadsState> 
       'api/table/describe',
       {
         model: 'HubletoApp/Community/Leads/Models/LeadDocument',
-        idLead: this.props.recordId,
+        idLead: this.props.recordId ?? description.idLead,
       },
       (description: any) => {
         this.setState({tableLeadDocumentsDescription: description} as TableLeadsState);

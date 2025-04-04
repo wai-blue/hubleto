@@ -89,7 +89,7 @@ export default class TableDeals extends Table<TableDealsProps, TableDealsState> 
       'api/table/describe',
       {
         model: 'HubletoApp/Community/Deals/Models/DealService',
-        idDeal: this.props.recordId,
+        idDeal: this.props.recordId ?? description.idDeal,
       },
       (description: any) => {
         this.setState({tableDealServicesDescription: description} as TableDealsState);
@@ -99,7 +99,7 @@ export default class TableDeals extends Table<TableDealsProps, TableDealsState> 
       'api/table/describe',
       {
         model: 'HubletoApp/Community/Deals/Models/DealDocument',
-        idDeal: this.props.recordId,
+        idDeal: this.props.recordId ?? description.idDeal,
       },
       (description: any) => {
         this.setState({tableDealDocumentsDescription: description} as TableDealsState);
